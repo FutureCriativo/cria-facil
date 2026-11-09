@@ -24,7 +24,7 @@ body{margin:0;min-height:100vh;background:radial-gradient(900px 500px at 50% -10
 .card{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px}
 .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
 .row .v{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums}
-#hm{font:700 30px system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--tx);background:#10101a;border:1px solid var(--line);border-radius:14px;padding:6px 12px;width:150px;text-align:center;color-scheme:dark}
+#hm{font:700 30px system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--tx);background:#10101a;border:1px solid var(--line);border-radius:14px;padding:6px 12px;width:150px;text-align:center;caret-color:var(--b)}
 #hm:focus{outline:2px solid var(--a);border-color:var(--a)}
 .aviso{min-height:18px;font-size:13px;color:var(--warn);margin:2px 0 0}
 input[type=range]{width:100%;margin:14px 0 4px;accent-color:var(--a);height:34px}
@@ -60,7 +60,7 @@ button:active{transform:scale(.98)}
   </section>
 
   <section class="card">
-    <div class="row"><span class="lbl">Hora que entrei</span><input type="time" id="hm" value="08:00" step="60" aria-label="Digite a hora de entrada"></div>
+    <div class="row"><span class="lbl">Hora que entrei</span><input type="text" id="hm" value="08:00" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="00:00" aria-label="Digite a hora de entrada"></div>
     <div class="aviso" id="aviso"></div>
     <input type="range" id="sl" min="360" max="600" step="1" value="480" aria-label="Hora de entrada">
     <div class="ticks"><span>06:00</span><span>08:00</span><span>10:00</span></div>
@@ -135,13 +135,18 @@ const ajusta = m => Math.min(Math.max(m, REGRA.min), REGRA.max);
 function avisa(t){ $('aviso').textContent = t || ''; }
 // digitar hora e minuto: corrige sozinho se estiver fora de 06:00-10:00
 function aplicaDigitado(corrigeCampo){
-  const v = $('hm').value; if (!v) return;
-  const [h, mi] = v.split(':').map(Number), m = h*60 + mi, c = ajusta(m);
+  const d = $('hm').value.replace(/\D/g, '').slice(0, 4);   // só números: 907 ou 0907 viram 09:07
+  if (d.length < 4 && !corrigeCampo) return;                // ainda digitando: espera
+  if (d.length < 3) { $('hm').value = fmt(entrada); return; } // incompleto ao sair: volta ao valor atual
+  const h = +d.slice(0, d.length - 2), mi = Math.min(+d.slice(-2), 59);
+  const m = Math.min(h, 23)*60 + mi, c = ajusta(m);
   entrada = c;
   avisa(c !== m ? 'Fora da faixa: ajustei para ' + fmt(c) : '');
   if (corrigeCampo) $('hm').value = fmt(c);
   render();
 }
+$('hm').onkeydown = e => { if (e.key === 'Enter') $('hm').blur(); };
+$('hm').onfocus =() => setTimeout(() => $('hm').select(), 0);
 $('hm').oninput = () => aplicaDigitado(false);
 $('hm').onchange = () => aplicaDigitado(true);
 $('hm').onblur = () => aplicaDigitado(true);
