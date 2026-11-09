@@ -60,9 +60,9 @@ function gerar(tam, escala, arredondado) {
 }
 
 const RAIZ = new URL('..', import.meta.url).pathname;
-fs.mkdirSync(RAIZ + 'public/icons', { recursive: true });
-fs.writeFileSync(RAIZ + 'public/icons/icon-192.png', gerar(192, 1.15, true));
-fs.writeFileSync(RAIZ + 'public/icons/icon-512.png', gerar(512, 1.15, true));
-fs.writeFileSync(RAIZ + 'public/icons/icon-maskable-512.png', gerar(512, 0.80, false)); // sem cantos; conteúdo na zona segura
-fs.writeFileSync(RAIZ + 'public/icons/apple-touch-icon.png', gerar(180, 0.95, false));   // iOS arredonda sozinho
+fs.mkdirSync(RAIZ + 'docs/icons', { recursive: true });
+fs.writeFileSync(RAIZ + 'docs/icons/icon-192.png', gerar(192, 1.15, true));
+fs.writeFileSync(RAIZ + 'docs/icons/icon-512.png', gerar(512, 1.15, true));
+fs.writeFileSync(RAIZ + 'docs/icons/icon-maskable-512.png', gerar(512, 0.80, false)); // sem cantos; conteúdo na zona segura
+fs.writeFileSync(RAIZ + 'docs/icons/apple-touch-icon.png', gerar(180, 0.95, false));   // iOS arredonda sozinho
 console.log('ícones gerados');
